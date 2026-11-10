@@ -1,0 +1,70 @@
+:root {
+  --bg: #120d0a;
+  --fg: #e9dcc6;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  overscroll-behavior: none;
+}
+
+body {
+  font-family: 'Pixelify Sans', ui-monospace, monospace;
+}
+
+.stage {
+  position: fixed;
+  inset: 0;
+  height: 100lvh;
+}
+
+.track {
+  height: 340vh;
+}
+
+.hint {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(233, 220, 198, 0.72);
+  pointer-events: none;
+  z-index: 50;
+  transition: opacity 0.2s linear;
+}
+
+.hint-line {
+  width: 1px;
+  height: 36px;
+  background: linear-gradient(rgba(233, 220, 198, 0.7), transparent);
+  animation: hint 2.2s ease-in-out infinite;
+  transform-origin: top;
+}
+
+@keyframes hint {
+  0%,
+  100% {
+    transform: scaleY(0.3);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hint-line {
+    animation: none;
+  }
+}

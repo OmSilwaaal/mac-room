@@ -82,6 +82,7 @@ export const projects = [
     gif: gif('om-card-1'),
     items: [
       { id: 'om-card-1', caption: 'Om Silwal  ·  business card', thesis: 'The name is the picture.', detail: '@Om over Silwal, a crow in flight, "graphic design" tucked under the type.', name: 'Card front', date: 'Card', gif: gif('om-card-1'), image: media('om-card-1.jpg') },
+      { id: 'om-card-2', caption: 'Om Silwal  ·  business card', thesis: 'The back does the talking.', detail: 'Phone, email and LinkedIn set huge, a QR code, and a dithered crow portrait.', name: 'Card back', date: 'Card', gif: gif('om-card-2'), image: media('om-card-2.jpg') },
     ],
   },
   {

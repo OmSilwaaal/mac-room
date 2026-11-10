@@ -145,7 +145,7 @@ function BootFade() {
       const el = document.getElementById('boot')
       if (el) {
         el.classList.add('is-done')
-        setTimeout(() => el.remove(), 1000)
+        setTimeout(() => el.remove(), 1500)
       }
     }
   })

@@ -230,7 +230,7 @@ function ImageViewer({ src, file }) {
       <div className="player-bar">
         <span className="viewer-hint">Business card</span>
         <a className="btn viewer-btn" href={file || src} target="_blank" rel="noreferrer">
-          Open PDF ↗
+          {file ? 'Open PDF ↗' : 'Full size ↗'}
         </a>
       </div>
     </div>
@@ -762,7 +762,7 @@ export default function MacOS({ arrived, near }) {
     if (w.kind === 'projects') return `${projects.length} items`
     if (w.kind === 'folder') return `${w.data.items.length} items`
     if (w.kind === 'video') return `${w.data.date}  ·  screen recording`
-    if (w.kind === 'image') return 'a5 Consulting  ·  business card'
+    if (w.kind === 'image') return w.data.caption || 'a5 Consulting  ·  business card'
     return null
   }
 

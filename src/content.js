@@ -70,6 +70,21 @@ export const projects = [
     ],
   },
   {
+    id: 'om-card',
+    thesis: 'A card for myself should look like my work, not like a template.',
+    facts: ['Oversized @Om Silwal, set tight enough to overlap', 'A dithered crow in flight on the front, a crow portrait on the back', 'Crosses as the only ornament', 'Phone, email, LinkedIn and a QR code on the back'],
+    name: 'My card',
+    year: '2026',
+    kind: 'Business card',
+    body: 'My own business card for graphic design: heavy grotesque type, 1-bit crows and nothing else.',
+    site: '',
+    source: '',
+    gif: gif('om-card-1'),
+    items: [
+      { id: 'om-card-1', caption: 'Om Silwal  ·  business card', thesis: 'The name is the picture.', detail: '@Om over Silwal, a crow in flight, "graphic design" tucked under the type.', name: 'Card front', date: 'Card', gif: gif('om-card-1'), image: media('om-card-1.jpg') },
+    ],
+  },
+  {
     id: 'tennisbot',
     thesis: 'Prediction markets misprice tennis, and a model can act on the gap faster than a person.',
     facts: ['Gradient boosting + LSTM hybrid', 'Trained on 50+ years of ATP results', 'Trades Kalshi markets autonomously', 'Manages positions while matches are live'],

@@ -99,15 +99,25 @@ function GifIcon({ label, sub, src, selected, folder, onSelect, onOpen, hover })
 }
 
 // Plays a recording in a window, in full colour.
-function VideoPlayer({ src, live }) {
+function VideoPlayer({ src, live, sound = false }) {
   const ref = useRef(null)
   const [playing, setPlaying] = useState(true)
+  // recordings with audio start with sound (opening the window is a click); silent ones stay muted
+  const [muted, setMuted] = useState(!sound)
   const [t, setT] = useState(0)
   useEffect(() => {
     const v = ref.current
     if (!v) return
-    if (live && playing) v.play().catch(() => {})
-    else v.pause()
+    if (live && playing) {
+      v.play().catch(() => {
+        // the browser refused sound without a fresh gesture: play muted instead
+        if (!v.muted) {
+          setMuted(true)
+          v.muted = true
+          v.play().catch(() => {})
+        }
+      })
+    } else v.pause()
   }, [live, playing])
   const seek = (e) => {
     const v = ref.current
@@ -119,7 +129,7 @@ function VideoPlayer({ src, live }) {
       <video
         ref={ref}
         src={src}
-        muted
+        muted={muted}
         loop
         playsInline
         autoPlay
@@ -136,6 +146,14 @@ function VideoPlayer({ src, live }) {
         <div className="player-track" onPointerDown={seek}>
           <div className="player-fill" style={{ width: `${t * 100}%` }} />
         </div>
+        {sound && (
+          <button type="button" className="player-btn" onClick={() => setMuted((m) => !m)} aria-label={muted ? 'Sound on' : 'Sound off'}>
+            <svg viewBox="0 0 10 10" width="14" height="14" shapeRendering="crispEdges" aria-hidden="true">
+              <path d="M1 3.5h2l3-2.5v8l-3-2.5H1z" fill="currentColor" />
+              {muted ? <path d="M7 3.5l2.5 3M9.5 3.5l-2.5 3" stroke="currentColor" strokeWidth="1" fill="none" /> : <path d="M7.2 3.2q1 1.8 0 3.6M8.4 2.2q1.8 2.8 0 5.6" stroke="currentColor" strokeWidth="0.9" fill="none" />}
+            </svg>
+          </button>
+        )}
         <a className="player-btn" href={src} target="_blank" rel="noreferrer" aria-label="Open video in a new tab">
           ↗
         </a>
@@ -667,7 +685,7 @@ export default function MacOS({ arrived, near }) {
           </div>
         )
       case 'video':
-        return <VideoPlayer src={w.data.video} live={arrived} />
+        return <VideoPlayer src={w.data.video} live={arrived} sound={!!w.data.sound} />
       case 'image':
         return <ImageViewer src={w.data.image} file={w.data.file} />
       case 'doc': {

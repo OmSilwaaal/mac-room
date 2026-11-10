@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Om — Portfolio</title>
+<!--
+  Source for public/om-portfolio.pdf.
+  Rebuild:  node pdf/frames.cjs && zsh pdf/assets.sh && node pdf/print.cjs
+-->
+<style>
+  /* brutalist, like the a5 card: paper, ink, heavy grotesk, hard rules */
+  @page { size: 11in 6.875in; margin: 0; }
+  :root { --paper: #e9e6de; --ink: #111111; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--ink);
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  .page {
+    position: relative; width: 11in; height: 6.875in;
+    padding: 0.5in 0.6in 0.55in; overflow: hidden;
+    page-break-after: always; background: var(--paper);
+  }
+  .page:last-child { page-break-after: auto; }
+
+  .folio {
+    position: absolute; left: 0.6in; right: 0.6in; bottom: 0.25in;
+    display: flex; justify-content: space-between;
+    font-size: 8pt; font-weight: 500; text-transform: lowercase;
+    border-top: 2px solid var(--ink); padding-top: 6px;
+  }
+  .eyebrow { font-size: 8.5pt; font-weight: 500; text-transform: lowercase; margin-bottom: 12px; }
+  h1, h2 { margin: 0; font-weight: 700; letter-spacing: -0.055em; line-height: 0.88; text-transform: lowercase; }
+  h2 { font-size: 58pt; }
+  /* a small @ riding just above the top-right of each headline */
+  h2::after, .cover h1::after {
+    content: '@'; font-size: 0.26em; font-weight: 500; letter-spacing: 0;
+    vertical-align: top; position: relative; top: -0.32em; margin-left: 0.06em;
+  }
+  .kind { font-size: 10pt; font-weight: 500; margin: 10px 0 14px; }
+
+  .thesis {
+    font-size: 15pt; font-weight: 700; letter-spacing: -0.02em; line-height: 1.12;
+    margin: 0 0 14px; padding: 10px 0; border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink);
+  }
+  p { font-size: 10pt; line-height: 1.42; margin: 0 0 9px; }
+  ul.facts { list-style: none; padding: 0; margin: 0 0 12px; font-size: 9.5pt; line-height: 1.45; }
+  ul.facts li { padding: 3px 0; border-bottom: 1px solid rgba(17, 17, 17, 0.25); }
+  ul.facts li::before { content: '— '; }
+  .links { font-size: 9pt; font-weight: 500; }
+  .links a { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
+
+  .shot { display: block; width: 100%; border: 2px solid var(--ink); }
+  .pix { image-rendering: pixelated; }
+  .cap { font-size: 8pt; font-weight: 500; margin-top: 4px; text-transform: lowercase; }
+
+  /* cover: the a5 card, but om */
+  .cover { height: 100%; display: grid; grid-template-columns: 2.3in 1fr; gap: 0.5in; }
+  .cover .pfp { width: 2.3in; border: 2px solid var(--ink); align-self: start; }
+  .cover > div { display: flex; flex-direction: column; justify-content: space-between; height: 100%; padding-bottom: 0.2in; }
+  .cover h1 { font-size: 230pt; letter-spacing: -0.07em; line-height: 0.78; }
+  .cover .quote { font-size: 20pt; font-weight: 700; letter-spacing: -0.03em; border-top: 2px solid var(--ink); padding-top: 10px; }
+  .cover .role { font-size: 10pt; font-weight: 500; }
+
+  /* about */
+  .about { display: grid; grid-template-columns: 1.3fr 1fr; gap: 0.55in; }
+  .about h2 { font-size: 40pt; }
+  .about h2::after { content: none; }
+  .stat { border-top: 2px solid var(--ink); padding: 8px 0 12px; }
+  .stat b { display: block; font-size: 40pt; letter-spacing: -0.05em; line-height: 0.95; }
+  .stat span { font-size: 9.5pt; font-weight: 500; }
+  .index { list-style: none; padding: 0; margin: 4px 0 0; font-size: 11pt; font-weight: 700; letter-spacing: -0.01em; }
+  .index li { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 2px solid var(--ink); }
+  .index li span { font-weight: 400; font-size: 9pt; }
+
+  /* project pages */
+  .proj { display: flex; flex-direction: column; height: 100%; }
+  .proj .top { display: grid; grid-template-columns: 1fr 1.15fr; gap: 0.45in; align-items: start; flex: 1; min-height: 0; }
+  .www { display: grid; grid-template-columns: repeat(3, 1fr); margin-bottom: 0.2in; border-top: 2px solid var(--ink); }
+  .www > div { padding: 8px 14px 0 0; }
+  .www > div + div { border-left: 2px solid var(--ink); padding-left: 14px; }
+  .www h3 { margin: 0 0 4px; font-size: 22pt; font-weight: 700; letter-spacing: -0.05em; text-transform: lowercase; line-height: 1; }
+  .www p { font-size: 9.2pt; line-height: 1.4; margin: 0; }
+  .media-one .shot { max-height: 2.7in; object-fit: cover; object-position: top; }
+  .grid4 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
+  .grid4 .shot { aspect-ratio: 16 / 9.2; object-fit: cover; }
+  .cardpair { display: grid; grid-template-columns: 1.4fr 1fr; gap: 12px; align-items: start; }
+
+  /* filmstrip: an animation shown as five numbered frames */
+  .strip { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-top: 6px; }
+  .strip img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border: 1.5px solid var(--ink); }
+  .strip span { display: block; font-size: 6.5pt; font-weight: 500; margin-top: 1px; }
+  .strip-label { font-size: 8pt; font-weight: 500; margin-top: 6px; text-transform: lowercase; }
+
+  /* contact */
+  .contact { display: flex; flex-direction: column; justify-content: flex-end; height: 100%; padding-bottom: 0.25in; }
+  .contact h2 { font-size: 150pt; letter-spacing: -0.07em; margin-bottom: 0.25in; }
+  .contact a { display: flex; gap: 24px; align-items: baseline; color: var(--ink); text-decoration: none; font-size: 24pt; font-weight: 700; letter-spacing: -0.03em; padding: 8px 0; border-top: 2px solid var(--ink); }
+  .contact a span { width: 1.6in; font-size: 9pt; font-weight: 500; letter-spacing: 0; text-transform: lowercase; }
+</style>
+</head>
+<body>
+
+<!-- 01 · cover -->
+<section class="page">
+  <div class="cover">
+    <img class="pfp pix" src="img/pfp.png" alt="Om, dithered portrait" />
+    <div>
+      <div><div class="eyebrow">portfolio · 2026</div><h1>om</h1></div>
+      <div class="quote">“devil is on my shoulder”</div>
+      <div class="role">UI/UX designer and developer.<br />Interfaces, trading tools, apps and strange websites.</div>
+    </div>
+  </div>
+  <div class="folio"><span>om</span><span>01</span></div>
+</section>
+
+<!-- 02 · about -->
+<section class="page">
+  <div class="eyebrow">about</div>
+  <div class="about">
+    <div>
+      <h2 style="margin-bottom:18px">three years of making interfaces people actually use.</h2>
+      <p>I've worked in UI/UX for over three years, taking interfaces from the first sketch to something people use every day.</p>
+      <p>I worked on the MMSD West High app, the iOS app for Madison West High School.</p>
+      <p>Beyond that I build my own products end to end: a paper-trading terminal, an iOS nutrition tracker, a prediction-market bot, websites for clients, and a few experiments, like a snowbound Soviet block built from my love of Russian music. This portfolio is also a website: a 3D room with an old computer whose screen is the whole site.</p>
+    </div>
+    <div>
+      <div class="stat"><b>3+ years</b><span>in UI/UX</span></div>
+      <div class="stat"><b>MMSD</b><span>West High app, iOS</span></div>
+      <ul class="index">
+        <li>Travauxus <span>Company</span></li>
+        <li>Vitalis <span>iOS app</span></li>
+        <li>a5 Consulting <span>Website + card</span></li>
+        <li>TennisBot <span>Python · ML</span></li>
+        <li>OM <span>Personal site</span></li>
+        <li>ket-ovrdse.com <span>Web parody</span></li>
+        <li>Pusto <span>3D scene</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="folio"><span>about</span><span>02</span></div>
+</section>
+
+<!-- 03 · travauxus -->
+<section class="page">
+  <div class="proj">
+    <div class="top">
+      <div>
+        <div class="eyebrow">project 01 · company</div>
+        <h2>travauxus</h2>
+        <div class="kind">Solana memecoin paper-trading terminal · 2026</div>
+        <p class="thesis">Practise on the real market before risking a cent.</p>
+        <ul class="facts"><li>Live from the bonding curve: 1-second candles, tape and rug flags</li><li>Paper money: trade the curve with nothing at risk</li><li>Landing page rebuilt 16 times between May and October</li></ul>
+      </div>
+      <div><div class="grid4"><div><img class="shot" src="img/tvx-squish.jpg" alt="" /><div class="strip"><div><img src="img/strip/tvx-squish-1.jpg" alt="" /><span>01</span></div><div><img src="img/strip/tvx-squish-2.jpg" alt="" /><span>02</span></div><div><img src="img/strip/tvx-squish-3.jpg" alt="" /><span>03</span></div><div><img src="img/strip/tvx-squish-4.jpg" alt="" /><span>04</span></div><div><img src="img/strip/tvx-squish-5.jpg" alt="" /><span>05</span></div></div><div class="cap">may 29 · squish cards</div></div><div><img class="shot" src="img/tvx-ascii.jpg" alt="" /><div class="strip"><div><img src="img/strip/tvx-ascii-1.jpg" alt="" /><span>01</span></div><div><img src="img/strip/tvx-ascii-2.jpg" alt="" /><span>02</span></div><div><img src="img/strip/tvx-ascii-3.jpg" alt="" /><span>03</span></div><div><img src="img/strip/tvx-ascii-4.jpg" alt="" /><span>04</span></div><div><img src="img/strip/tvx-ascii-5.jpg" alt="" /><span>05</span></div></div><div class="cap">oct 15 · ascii terminal</div></div><div><img class="shot" src="img/tvx-opening.jpg" alt="" /><div class="strip"><div><img src="img/strip/tvx-opening-1.jpg" alt="" /><span>01</span></div><div><img src="img/strip/tvx-opening-2.jpg" alt="" /><span>02</span></div><div><img src="img/strip/tvx-opening-3.jpg" alt="" /><span>03</span></div><div><img src="img/strip/tvx-opening-4.jpg" alt="" /><span>04</span></div><div><img src="img/strip/tvx-opening-5.jpg" alt="" /><span>05</span></div></div><div class="cap">oct 19 · opening in the page</div></div><div><img class="shot" src="img/tvx-dither.jpg" alt="" /><div class="strip"><div><img src="img/strip/tvx-dither-1.jpg" alt="" /><span>01</span></div><div><img src="img/strip/tvx-dither-2.jpg" alt="" /><span>02</span></div><div><img src="img/strip/tvx-dither-3.jpg" alt="" /><span>03</span></div><div><img src="img/strip/tvx-dither-4.jpg" alt="" /><span>04</span></div><div><img src="img/strip/tvx-dither-5.jpg" alt="" /><span>05</span></div></div><div class="cap">oct 25 · dither stage</div></div></div></div>
+    </div>
+    <div class="www">
+      <div><h3>why</h3><p>I love building web3 apps. Travauxus started as the trading tool I wanted to exist: somewhere to learn the memecoin market without losing money doing it.</p></div>
+      <div><h3>who</h3><p>Me first, and the other traders using the platform at the same time: everyone watching the same live market, on paper, together.</p></div>
+      <div><h3>what</h3><p>A design style taken from old video games and vintage film: dithered pixels, terminal type, grain. Every animation was tuned for fluidity, so live data moves smoothly instead of jumping.</p></div>
+    </div>
+  </div>
+  <div class="folio"><span>travauxus</span><span>03</span></div>
+</section>
+
+<!-- 04 · vitalis -->
+<section class="page">
+  <div class="proj">
+    <div class="top">
+      <div>
+        <div class="eyebrow">project 02 · ios app</div>
+        <h2>vitalis</h2>
+        <div class="kind">iOS · SwiftUI · Liquid Glass · 2026</div>
+        <p class="thesis">Track what you actually eat, down to the micronutrient, without the app feeling like homework.</p>
+        <ul class="facts"><li>Snap a photo or scan a barcode; every food is matched to USDA data</li><li>Calorie ring, water and Apple Watch daylight on Home</li><li>Full vitamin and mineral breakdown with 7-day trends</li><li>Map of nearby butchers, farms and raw-food suppliers</li></ul>
+        <div class="links">Code · <a href="https://github.com/OmSilwaaal/primal">github.com/OmSilwaaal/primal</a></div>
+      </div>
+      <div><div class="media-one"><img class="shot pix" src="img/vitalis.png" alt="" /><div class="strip"><div><img src="img/strip/vitalis-1.png" class="pix" alt="" /><span>01</span></div><div><img src="img/strip/vitalis-2.png" class="pix" alt="" /><span>02</span></div><div><img src="img/strip/vitalis-3.png" class="pix" alt="" /><span>03</span></div><div><img src="img/strip/vitalis-4.png" class="pix" alt="" /><span>04</span></div><div><img src="img/strip/vitalis-5.png" class="pix" alt="" /><span>05</span></div></div><div class="strip-label">frames 01–05 · loop</div><div class="cap">monochrome design, branded with the algiz rune from the app icon</div></div></div>
+    </div>
+    <div class="www">
+      <div><h3>why</h3><p>Most nutrition apps stop at calories and feel like homework. I wanted one that shows every vitamin and mineral you hit or miss, and makes logging take seconds.</p></div>
+      <div><h3>who</h3><p>People eating whole and raw foods who care what is actually in their food: the ones buying from butchers and farms, not just counting calories.</p></div>
+      <div><h3>what</h3><p>Monochrome Liquid Glass on iOS, the calorie ring as the centre of Home, and the Algiz rune from the app icon used as the brand mark wherever there is space for it.</p></div>
+    </div>
+  </div>
+  <div class="folio"><span>vitalis</span><span>04</span></div>
+</section>
+
+<!-- 05 · a5 consulting -->
+<section class="page">
+  <div class="proj">
+    <div class="top">
+      <div>
+        <div class="eyebrow">project 03 · brand &amp; web</div>
+        <h2>a5 consulting</h2>
+        <div class="kind">Brand identity · website + business card · 2026</div>
+        <p class="thesis">A consultancy should look as considered as the software it sells.</p>
+        <ul class="facts"><li>Website and print card for a5 Consulting</li><li>Blob navigation, oversized type, a matching card</li><li>Services: AI &amp; automation, custom software, systems integration</li></ul>
+      </div>
+      <div><div class="cardpair">
+        <div><img class="shot" src="img/a5-site.jpg" alt="" style="aspect-ratio:16/10;object-fit:cover" /><div class="cap">website</div></div>
+        <div><img class="shot" src="img/a5-card.jpg" alt="" /><div class="cap">business card, front</div></div>
+      </div><div class="strip"><div><img src="img/strip/a5-1.jpg" alt="" /><span>01</span></div><div><img src="img/strip/a5-2.jpg" alt="" /><span>02</span></div><div><img src="img/strip/a5-3.jpg" alt="" /><span>03</span></div><div><img src="img/strip/a5-4.jpg" alt="" /><span>04</span></div><div><img src="img/strip/a5-5.jpg" alt="" /><span>05</span></div></div><div class="strip-label">website intro · frames 01–05</div></div>
+    </div>
+    <div class="www">
+      <div><h3>why</h3><p>A business brand created from scratch: one identity that carries from the website to the card in your hand, so the company reads as one thing.</p></div>
+      <div><h3>who</h3><p>Ari (Aryaman Saini), CEO of a5 Consulting, and the businesses he pitches AI and custom software to.</p></div>
+      <div><h3>what</h3><p>The design prompt was ink and newspapers: heavy black type pressed onto paper stock, editorial layout, oversized headlines and print texture, carried from the card to every page of the site.</p></div>
+    </div>
+  </div>
+  <div class="folio"><span>a5 consulting</span><span>05</span></div>
+</section>
+
+<!-- 06 · tennisbot -->
+<section class="page">
+  <div class="proj">
+    <div class="top">
+      <div>
+        <div class="eyebrow">project 04 · python · ml</div>
+        <h2>tennisbot</h2>
+        <div class="kind">Kalshi tennis prediction &amp; trading · 2026</div>
+        <p class="thesis">Prediction markets misprice tennis, and a model can act on the gap faster than a person.</p>
+        <ul class="facts"><li>Gradient boosting + LSTM, trained on 50+ years of ATP results</li><li>Finds edges against market-implied probabilities</li><li>Places and manages positions live while matches play</li></ul>
+        <div class="links"><a href="https://github.com/OmSilwaaal/TennisBot77">github.com/OmSilwaaal/TennisBot77</a></div>
+      </div>
+      <div><div class="media-one"><img class="shot pix" src="img/tennisbot.png" alt="" /><div class="strip"><div><img src="img/strip/tennisbot-1.png" class="pix" alt="" /><span>01</span></div><div><img src="img/strip/tennisbot-2.png" class="pix" alt="" /><span>02</span></div><div><img src="img/strip/tennisbot-3.png" class="pix" alt="" /><span>03</span></div><div><img src="img/strip/tennisbot-4.png" class="pix" alt="" /><span>04</span></div><div><img src="img/strip/tennisbot-5.png" class="pix" alt="" /><span>05</span></div></div><div class="strip-label">frames 01–05 · loop</div></div></div>
+    </div>
+    <div class="www">
+      <div><h3>why</h3><p>To see whether a model trained on decades of results could beat the crowd's odds on prediction markets.</p></div>
+      <div><h3>who</h3><p>Me: it trades my own account, so every decision it makes is one I have to stand behind.</p></div>
+      <div><h3>what</h3><p>A hybrid machine-learning model and an autonomous trading loop: discover markets, price the match, compare to the market, size the position, manage it live.</p></div>
+    </div>
+  </div>
+  <div class="folio"><span>tennisbot</span><span>06</span></div>
+</section>
+
+<!-- 07 · om -->
+<section class="page">
+  <div class="proj">
+    <div class="top">
+      <div>
+        <div class="eyebrow">project 05 · personal site</div>
+        <h2>om</h2>
+        <div class="kind">A constellation, not a menu · 2026</div>
+        <p class="thesis">Everything at once, nothing hidden behind navigation.</p>
+        <ul class="facts"><li>Seven nodes: About, Music, Philosophy, Info, Code, Photography, Gallery</li><li>Photos surface as you move across the map</li></ul>
+        <div class="links"><a href="https://om-projkect.vercel.app">om-projkect.vercel.app</a></div>
+      </div>
+      <div><div class="media-one"><img class="shot" src="img/om-site.jpg" alt="" /><div class="strip"><div><img src="img/strip/om-1.jpg" alt="" /><span>01</span></div><div><img src="img/strip/om-2.jpg" alt="" /><span>02</span></div><div><img src="img/strip/om-3.jpg" alt="" /><span>03</span></div><div><img src="img/strip/om-4.jpg" alt="" /><span>04</span></div><div><img src="img/strip/om-5.jpg" alt="" /><span>05</span></div></div><div class="strip-label">frames 01–05 · loop</div></div></div>
+    </div>
+    <div class="www">
+      <div><h3>why</h3><p>A personal space for everything I'm into, not just work: music, philosophy, photography and code side by side.</p></div>
+      <div><h3>who</h3><p>Anyone who wants to know me beyond a CV: friends, collaborators and people finding me online.</p></div>
+      <div><h3>what</h3><p>A constellation of linked nodes instead of a menu, with photos that surface as you explore, so the whole of me is visible at once.</p></div>
+    </div>
+  </div>
+  <div class="folio"><span>om</span><span>07</span></div>
+</section>
+
+<!-- 08 · ket-ovrdse.com -->
+<section class="page">
+  <div class="proj">
+    <div class="top">
+      <div>
+        <div class="eyebrow">project 06 · web parody</div>
+        <h2>ket-ovrdse.com</h2>
+        <div class="kind">The Y2K internet, on purpose · 2026</div>
+        <p class="thesis">The early internet was loud, hostile and funny. This is that.</p>
+        <ul class="facts"><li>Fake virus alerts and mail scanners</li><li>CLAIM NOW pop-ups that multiply</li><li>A Y2K desktop parody in the browser</li></ul>
+        <div class="links"><a href="https://newthing-five.vercel.app">newthing-five.vercel.app</a></div>
+      </div>
+      <div><div class="media-one"><img class="shot pix" src="img/newthing.png" alt="" /><div class="strip"><div><img src="img/strip/newthing-1.png" class="pix" alt="" /><span>01</span></div><div><img src="img/strip/newthing-2.png" class="pix" alt="" /><span>02</span></div><div><img src="img/strip/newthing-3.png" class="pix" alt="" /><span>03</span></div><div><img src="img/strip/newthing-4.png" class="pix" alt="" /><span>04</span></div><div><img src="img/strip/newthing-5.png" class="pix" alt="" /><span>05</span></div></div><div class="strip-label">frames 01–05 · loop</div></div></div>
+    </div>
+    <div class="www">
+      <div><h3>why</h3><p>For fun, and out of nostalgia for how chaotic the web used to be before everything looked the same.</p></div>
+      <div><h3>who</h3><p>Friends, and anyone who remembers, or never saw, the pop-up era.</p></div>
+      <div><h3>what</h3><p>A faithful Y2K desktop: Windows-style dialogs, fake alerts and spam pop-ups that pile up the more you click.</p></div>
+    </div>
+  </div>
+  <div class="folio"><span>ket-ovrdse.com</span><span>08</span></div>
+</section>
+
+<!-- 09 · pusto -->
+<section class="page">
+  <div class="proj">
+    <div class="top">
+      <div>
+        <div class="eyebrow">project 07 · 3d scene</div>
+        <h2>pusto</h2>
+        <div class="kind">WebGL · PS1 style · 2026</div>
+        <p class="thesis">Some music sounds like a place. This is the place Russian music sounds like to me.</p>
+        <ul class="facts"><li>A low-poly Soviet panel block at night, built in WebGL</li><li>One warm window lit; ПУСТО (“empty”) painted down the facade</li><li>Pixelated render, fog and heavy snowfall</li></ul>
+      </div>
+      <div><div class="media-one"><img class="shot" src="img/pusto.jpg" alt="" /><div class="strip"><div><img src="img/strip/pusto-1.jpg" alt="" /><span>01</span></div><div><img src="img/strip/pusto-2.jpg" alt="" /><span>02</span></div><div><img src="img/strip/pusto-3.jpg" alt="" /><span>03</span></div><div><img src="img/strip/pusto-4.jpg" alt="" /><span>04</span></div><div><img src="img/strip/pusto-5.jpg" alt="" /><span>05</span></div></div><div class="strip-label">frames 01–05 · on the site it plays with its music</div></div></div>
+    </div>
+    <div class="www">
+      <div><h3>why</h3><p>My obsession with Russian music. I wanted to build the place it sounds like: cold, concrete and empty, with one window still warm.</p></div>
+      <div><h3>who</h3><p>Me, and anyone who listens to that music and knows the feeling it leaves behind.</p></div>
+      <div><h3>what</h3><p>A PS1-style scene: a low-poly panel block in falling snow, pixelated and fogged, with ПУСТО down the side of the building, scored by the music itself.</p></div>
+    </div>
+  </div>
+  <div class="folio"><span>pusto</span><span>09</span></div>
+</section>
+
+<!-- contact -->
+<section class="page">
+  <div class="contact">
+    <div class="eyebrow">contact</div>
+    <h2>say hi</h2>
+    <a href="https://www.instagram.com/silwal.om/"><span>instagram</span>@silwal.om</a>
+    <a href="https://www.linkedin.com/in/om-silwal-a7a9683b7/"><span>linkedin</span>Om</a>
+    <a href="https://github.com/OmSilwaaal"><span>github</span>@OmSilwaaal</a>
+  </div>
+  <div class="folio"><span>contact</span><span>10</span></div>
+</section>
+
+</body>
+</html>

@@ -21,7 +21,7 @@ export const about = {
   paragraphs: [
     "I've worked in UI/UX for over three years, taking interfaces from the first sketch to something people actually use.",
     'I worked on the MMSD West High app, the iOS app for Madison West High School.',
-    "Beyond that: Travauxus, a paper-trading terminal for Solana memecoins; Vitalis, an iOS nutrition tracker; a5 Consulting's website and business card; TennisBot, a Kalshi tennis-prediction bot; my OM constellation site; and ket-ovrdse.com, a Y2K pop-up parody.",
+    "Beyond that: Travauxus, a paper-trading terminal for Solana memecoins; Vitalis, an iOS nutrition tracker; a5 Consulting's website and business card; TennisBot, a Kalshi tennis-prediction bot; my OM constellation site; Pusto, a snowbound Soviet block built from my love of Russian music; and ket-ovrdse.com, a Y2K pop-up parody.",
   ],
   facts: [
     ['UI/UX', '3+ years'],
@@ -64,8 +64,8 @@ export const projects = [
     source: '',
     gif: gif('a5-site'),
     items: [
-      { id: 'a5-site', thesis: 'Navigation should be the most memorable thing on the page.', detail: 'Blob menu, Ary*saini type, contact and case-study pages.', name: 'Website', date: 'Nov 9', gif: gif('a5-site'), video: media('a5-site.mp4') },
-      { id: 'a5-card-1', thesis: 'The card should read from across a table.', detail: 'Oversized Ary*saini, QR code, AI & Automation / Custom Software.', name: 'Card front', date: 'PDF', gif: gif('a5-card-1'), image: media('a5-card-1.jpg'), file: media('a5-business-card.pdf') },
+      { id: 'a5-site', thesis: 'Navigation should be the most memorable thing on the page.', detail: 'Blob menu, Ari*saini type, contact and case-study pages.', name: 'Website', date: 'Nov 9', gif: gif('a5-site'), video: media('a5-site.mp4') },
+      { id: 'a5-card-1', thesis: 'The card should read from across a table.', detail: 'Oversized Ari*saini, QR code, AI & Automation / Custom Software.', name: 'Card front', date: 'PDF', gif: gif('a5-card-1'), image: media('a5-card-1.jpg'), file: media('a5-business-card.pdf') },
       { id: 'a5-card-2', thesis: 'The back does the explaining.', detail: 'a5 mark, role, phone and email, the three services.', name: 'Card back', date: 'PDF', gif: gif('a5-card-2'), image: media('a5-card-2.jpg'), file: media('a5-business-card.pdf') },
     ],
   },
@@ -94,6 +94,21 @@ export const projects = [
     body: 'An earlier personal site: about, music and philosophy.',
     site: 'https://om-projkect.vercel.app',
     source: 'https://github.com/OmSilwaaal/OmProjkect',
+  },
+  {
+    id: 'pusto',
+    thesis: 'Some music sounds like a place. This is the place Russian music sounds like to me.',
+    facts: ['A PS1-style Soviet panel block at night, built in WebGL', 'One warm window lit; ПУСТО ("empty") painted down the facade', 'Low-poly model, pixelated render, fog and heavy snowfall', 'The recording plays with its music'],
+    gif: gif('pusto'),
+    video: media('pusto.mp4'),
+    sound: true,
+    date: 'Nov 10',
+    name: 'Pusto',
+    year: '2026',
+    kind: '3D scene · WebGL',
+    body: 'An abandoned Soviet apartment block in falling snow, made out of my obsession with Russian music: the cold, the concrete and the loneliness inside it.',
+    site: '',
+    source: '',
   },
   {
     id: 'newthing',

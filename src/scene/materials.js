@@ -9,6 +9,9 @@ import * as THREE from 'three'
 //   - drei <RoundedBox> (ExtrudeGeometry) has object-space UVs: 1 unit = 1 metre.
 //   - BoxGeometry / PlaneGeometry / cylinders use 0..1 per face.
 // Each material sets its own repeat so detail lands at a believable scale.
+//
+// Sizes are deliberately modest (256-512 px): the room is dark, blue and grainy,
+// so bigger maps cost startup time without changing what you see.
 // ---------------------------------------------------------------------------
 
 function rng(seed) {
@@ -170,7 +173,7 @@ function addGrain(g, w, h, r, amount, tint = [1, 1, 1]) {
 
 // --- generators -------------------------------------------------------------
 
-function woodSet(key, { size = 1024, base, dark, light, seed, planks = 0, lines = 240 }) {
+function woodSet(key, { size = 512, base, dark, light, seed, planks = 0, lines = 240 }) {
   return once('wood:' + key, () => {
     const [c, g] = canvas(size)
     const r = rng(seed)
@@ -233,10 +236,10 @@ function woodSet(key, { size = 1024, base, dark, light, seed, planks = 0, lines 
 // Grey (near-white) so material.color tints it; carries orange peel, yellowing and smudges.
 function plasticSet() {
   return once('plastic', () => {
-    const size = 1024
+    const size = 512
     const r = rng(17)
     const tone = fbm(size, size, { cells: 4, octaves: 4, seed: 4 })
-    const peel = fbm(size, size, { cells: 384, octaves: 2, seed: 5, gain: 0.5 })
+    const peel = fbm(size, size, { cells: 192, octaves: 2, seed: 5, gain: 0.5 })
     const [c, g] = canvas(size)
     const img = g.createImageData(size, size)
     for (let i = 0; i < size * size; i++) {
@@ -285,7 +288,7 @@ function plasticSet() {
 
 function brushedMetalSet() {
   return once('brushed', () => {
-    const size = 512
+    const size = 256
     const r = rng(29)
     const streak = fbm(size, size, { cells: 2, octaves: 5, seed: 8, stretchX: 0.5, stretchY: 40, gain: 0.6 })
     const patina = fbm(size, size, { cells: 5, octaves: 4, seed: 9 })
@@ -309,7 +312,7 @@ function brushedMetalSet() {
 
 function glassShadeSet() {
   return once('shadeGlass', () => {
-    const size = 512
+    const size = 256
     const ripple = fbm(size, size, { cells: 3, octaves: 3, seed: 12, stretchX: 6, stretchY: 0.4 })
     const tone = fbm(size, size, { cells: 6, octaves: 3, seed: 13 })
     const c = grayToCanvas(
@@ -325,7 +328,7 @@ function glassShadeSet() {
 // Book cloth / linen: woven threads, grey so each cover tints it.
 function clothSet() {
   return once('cloth', () => {
-    const size = 512
+    const size = 256
     const r = rng(41)
     const slub = fbm(size, size, { cells: 32, octaves: 2, seed: 15, stretchX: 0.2, stretchY: 1 })
     const height = new Float32Array(size * size)
@@ -357,7 +360,7 @@ function clothSet() {
 
 function leatherSet() {
   return once('leather', () => {
-    const size = 512
+    const size = 256
     const pebble = fbm(size, size, { cells: 48, octaves: 3, seed: 21 })
     const crease = fbm(size, size, { cells: 6, octaves: 4, seed: 22 })
     const height = pebble.map((v, i) => v * 0.7 + Math.abs(crease[i] - 0.5) * 0.6)
@@ -373,7 +376,7 @@ function leatherSet() {
 
 function ceramicSet() {
   return once('ceramic', () => {
-    const size = 512
+    const size = 256
     const r = rng(51)
     const pool = fbm(size, size, { cells: 4, octaves: 4, seed: 31, stretchX: 0.6, stretchY: 1.6 })
     const c = grayToCanvas(
@@ -398,7 +401,7 @@ function ceramicSet() {
 
 function plasterSet() {
   return once('plaster', () => {
-    const size = 1024
+    const size = 512
     const r = rng(41)
     const [c, g] = canvas(size)
     g.fillStyle = '#6a5f53'
@@ -423,7 +426,7 @@ function plasterSet() {
 
 function paperFiberSet() {
   return once('paperFiber', () => {
-    const size = 512
+    const size = 256
     const fiber = fbm(size, size, { cells: 64, octaves: 3, seed: 71, stretchX: 3, stretchY: 0.4 })
     const cockle = fbm(size, size, { cells: 3, octaves: 3, seed: 72 })
     const height = fiber.map((v, i) => v * 0.4 + cockle[i] * 0.6)
@@ -447,7 +450,7 @@ function rubberSet() {
 
 function vinylSet() {
   return once('vinyl', () => {
-    const size = 512
+    const size = 256
     const streak = fbm(size, size, { cells: 2, octaves: 4, seed: 91, stretchX: 0.3, stretchY: 24 })
     const dust = fbm(size, size, { cells: 6, octaves: 3, seed: 92 })
     const c = grayToCanvas(
@@ -463,7 +466,7 @@ function vinylSet() {
 // CRT glass: mostly mirror, with dust and a couple of finger smears.
 function crtGlassRoughness() {
   return once('crtRough', () => {
-    const size = 512
+    const size = 256
     const r = rng(101)
     const n = fbm(size, size, { cells: 8, octaves: 4, seed: 102 })
     const [c, g] = [grayToCanvas(n.map((v) => 0.04 + Math.max(0, v - 0.55) * 0.3), size, size), null]
@@ -648,7 +651,7 @@ export function getMaterials() {
       seed: 23,
     })
     const ebony = woodSet('ebony', {
-      size: 512,
+      size: 256,
       base: '#24160d',
       dark: (r) => `rgba(6,3,1,${0.15 + r() * 0.2})`,
       light: (r) => `rgba(90,55,30,${0.05 + r() * 0.1})`,

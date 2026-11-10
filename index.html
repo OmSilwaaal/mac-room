@@ -5,8 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#120d0a" />
     <title>Om</title>
+    <style>
+      html, body { margin: 0; background: #070c2c; }
+      #boot {
+        position: fixed; inset: 0; z-index: 100;
+        display: grid; place-items: center;
+        background: radial-gradient(60% 50% at 50% 55%, #0f1d6a 0%, #070c2c 70%);
+        color: #6dff8e; font: 600 15px/1.4 ui-monospace, Menlo, monospace; letter-spacing: 0.22em;
+        text-transform: uppercase; text-shadow: 0 0 6px rgba(109, 255, 142, 0.6);
+        transition: opacity 0.9s ease;
+      }
+      #boot.is-done { opacity: 0; pointer-events: none; }
+      #boot .b-mark { font-size: 44px; letter-spacing: 0.1em; margin-bottom: 14px; text-align: center; }
+      #boot .b-line { display: flex; align-items: center; gap: 10px; opacity: 0.8; }
+      #boot .b-cur { width: 10px; height: 16px; background: currentColor; animation: b-blink 1s steps(1) infinite; }
+      @keyframes b-blink { 50% { opacity: 0; } }
+      @media (prefers-reduced-motion: reduce) { #boot .b-cur { animation: none; } }
+    </style>
   </head>
   <body>
+    <!-- shown instantly, before any script; fades out on the 3D scene's first frame -->
+    <div id="boot" aria-hidden="true">
+      <div>
+        <div class="b-mark">Om</div>
+        <div class="b-line">warming up the tube<span class="b-cur"></span></div>
+      </div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

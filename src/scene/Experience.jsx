@@ -135,6 +135,23 @@ function CameraRig({ onArrivedChange, onNearChange, reducedMotion }) {
   return null
 }
 
+// Fades out the HTML boot screen once the scene has actually drawn (two frames:
+// the first one compiles shaders).
+function BootFade() {
+  const frames = useRef(0)
+  useFrame(() => {
+    if (frames.current > 2) return
+    if (++frames.current === 2) {
+      const el = document.getElementById('boot')
+      if (el) {
+        el.classList.add('is-done')
+        setTimeout(() => el.remove(), 1000)
+      }
+    }
+  })
+  return null
+}
+
 function Lights() {
   return (
     <>
@@ -200,6 +217,7 @@ export default function Experience({ onArrivedChange, onApproach, arrived, setDp
         }}
       />
       <CameraRig onArrivedChange={onArrivedChange} onNearChange={setNear} reducedMotion={reducedMotion} />
+      <BootFade />
       <Lights />
       <Room />
       <Macintosh arrived={arrived} near={near} onApproach={onApproach} portal={portal} />

@@ -18,6 +18,7 @@ still a5-site $M/a5-site.mp4 7.6
 still om-site $M/om-site.mp4 4
 still pusto $M/pusto.mp4 6
 cp $M/a5-card-1.jpg $I/a5-card.jpg
+cp $M/om-card-1.jpg $I/om-card.jpg
 
 # five frames spread across a video (or explicit times), for the filmstrips
 strip() {
